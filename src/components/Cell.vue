@@ -1,5 +1,5 @@
 <template>
-  <div class="cell" v-on:click="moveMark">{{mark}}</div>
+  <div class="cell" @click="moveMark">{{cell}}</div>
 </template>
 
 
@@ -7,13 +7,22 @@
 
   export default {
     name: 'cell',
-    data () {
-      return {
-        mark: ''
+    props: [
+      'cell',
+      'numberOfCell'
+    ],
+    computed: {
+      activePlayer() {
+        return this.$store.state.activePlayer;
       }
     },
     methods: {
       moveMark() {
+        if (!this.$store.state.cells[this.numberOfCell] && this.$store.state.gameStatus === this.$store.state.gameStatuses.turn) {
+          this.$set(this.$store.state.cells, this.numberOfCell, this.$store.state.activePlayer);
+          this.$store.commit('makeMove');
+          this.$emit('onmakemove', this.numberOfCell);
+        }
       }
     }
   }
@@ -23,6 +32,9 @@
 
 <style lang="scss">
   .cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 33.333%;
     height: 110px;
     border: 3px solid #2c3e50;

@@ -1,7 +1,7 @@
 <template>
   <div class="grid-container">
     <div class="grid">
-      <cell ref="cell" v-for="(cell, index) in cells" v-bind:value="activePlayer" v-on:onmove="movePlayer"></cell>
+      <cell @onmakemove="changeGameStatus" v-for="(cell, index) in cells" :cell="cell" :numberOfCell="index"></cell>
     </div>
   </div>
 </template>
@@ -12,39 +12,27 @@
 
   export default {
     components: {Cell},
-    props: [
-      'restart'
-    ],
-    data () {
-      return {
-        activePlayer: players.x,
-        gameStatus: gameStatus.turn,
-        moves: 0,
-        cells: {
-          1: '', 2: '', 3: '',
-          4: '', 5: '', 6: '',
-          7: '', 8: '', 9: ''
-        },
-        winConditions: [
-          [1, 2, 3], [4, 5, 6], [7, 8, 9],
-          [1, 4, 7], [2, 5, 8], [3, 6, 9],
-          [1, 5, 9], [3, 5, 7]
-        ]
-      }
-    },
-    computed: {},
-    methods: {
-      changePlayer() {
-        store.commit('changePlayer');
-      },
-      movePlayer(index) {
-        store.commit('makeMove');
-      },
-      checkForWin() {
 
+    computed: {
+      cells() {
+        return this.$store.state.cells;
+      },
+    },
+    methods: {
+      checkForWin() {
+        let cells = this.$store.state.cells, wc = this.$store.state.winConditions, ap = this.$store.state.activePlayer;
+        for (let i = 0; i < wc.length; i++) {
+          if (ap === cells[wc[i][0]] &&  ap === cells[wc[i][1]] && ap === cells[wc[i][2]]) {
+            return true;
+          }
+        }
+        return false;
       },
       changeGameStatus() {
-
+        this.$store.commit('changeGameStatus', this.checkForWin());
+        if (this.$store.state.gameStatus === this.$store.state.gameStatuses.turn) {
+          this.$store.commit('changePlayer');
+        }
       }
     }
   }

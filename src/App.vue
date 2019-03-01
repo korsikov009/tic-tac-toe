@@ -1,15 +1,20 @@
 <template>
   <div id="app">
-    <div id="details">
-      <h1>Tic Tac Toe</h1>
-      <h2>Match number...{{ matches}}</h2>
+    <div class="score">
+      <div class="score-x">X has {{winnerX}} wins</div>
+      <h2 class="score-title">Score Board</h2>
+      <div class="score-o">O has {{winnerO}} wins</div>
     </div>
-    <div class="game-field">
-      <div class="game-status" v-bind:class="classGameStatus">
-        {{gameStatusMessage}}
+    <div class="container">
+      <div id="details">
+        <h1>Tic Tac Toe</h1>
+        <h2>Match #{{matches}}</h2>
       </div>
-      <grid v-on:onmoveplayer="checkMove" v-bind:restart="restart" v-on:onactiveplayer="getActivePlayer"></grid>
-      <button class="restart" v-on:click="restart">Restart (in dev)</button>
+      <div  class="game-field">
+        <div class="game-status" :class="classGameStatus">{{gameMessage}}</div>
+        <grid></grid>
+        <button class="restart" @click="restart">Restart</button>
+      </div>
     </div>
   </div>
 </template>
@@ -18,62 +23,41 @@
 
   import Grid from './components/Grid.vue'
 
-  let statusMessage = {
-    turn: 'player move',
-    draw: 'Draw!',
-    win: 'player win!'
-  };
-
-
   export default {
     components: {Grid},
     name: 'app',
-    data () {
-      return {
-        wins: {
-          x: 0,
-          o: 0
-        },
-        gameStatus: 'turn',
-        activePlayer: 'X',
-        restart: false
-      }
-    },
     computed: {
       matches() {
-        return this.wins.x + this.wins.o;
+        return this.$store.state.matches;
       },
-      nonActivePlayer() {
-        if (this.activePlayer === 'X') {
-          return 'O';
+      gameMessage() {
+        let message = '';
+        const state = this.$store.state;
+        if (state.gameStatus === state.gameStatuses.win) {
+          message = state.activePlayer + ' ' +  state.statusMessages.win;
+        } else if(state.gameStatus === state.gameStatuses.draw) {
+          message = state.statusMessages.draw;
+        } else {
+          message = state.activePlayer + ' ' + state.statusMessages.turn;
         }
-        return 'X';
+        return message;
       },
-      gameStatusMessage: {
-        get() {
-          if (this.gameStatus === 'win') {
-            return this.gameStatusMessage = this.activePlayer + " " + statusMessage.win;
-
-          } else if (this.gameStatus === 'draw') {
-            return this.gameStatusMessage = statusMessage.draw;
-
-          }
-          return this.gameStatusMessage = this.activePlayer + " " + statusMessage.turn;
-        },
-        set() {
-          // добавил, потому что была ошибка, насчет того что у данного свойства нет сеттера
-        }
-
+      winnerX() {
+        return this.$store.state.wins.x;
+      },
+      winnerO() {
+        return this.$store.state.wins.o;
       },
       classGameStatus() {
-        if (this.gameStatus === 'win') {
+        const state = this.$store.state;
+        if (state.gameStatus === state.gameStatuses.win) {
           return {
             'game-status_turn': false,
             'game-status_win': true,
             'game-status_draw': false,
           }
         }
-        else if (this.gameStatus === 'draw') {
+        else if (state.gameStatus === state.gameStatuses.draw) {
           return {
             'game-status_turn': false,
             'game-status_win': false,
@@ -90,14 +74,8 @@
       }
     },
     methods: {
-      checkMove (gameStatus) {
-        this.gameStatus = gameStatus;
-      },
-      getActivePlayer(activePlayer) {
-        this.activePlayer = activePlayer;
-      },
-      restartGame() {
-        this.restart = true;
+      restart() {
+        this.$store.commit('restart');
       }
     }
   }
@@ -124,14 +102,41 @@
 
   #app {
     margin: 0 auto;
-    max-width: 300px;
+    max-width: 600px;
     color: #34495e;
+  }
+
+  .container {
+    margin: 0 auto;
+    max-width: 300px;
   }
 
   h1 {
     text-transform: uppercase;
     font-weight: bold;
     font-size: 3em;
+  }
+
+  .score {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    background-color: #16a085;
+    color: #fff;
+    box-shadow: 10px solid #fff;
+    padding: 10px 20px;
+    overflow-x: none;
+  }
+
+  .score-title {
+    margin: 0;
+  }
+
+  .score-x, .score-o {
+    font-weight: bold;
+    font-size: 20px;
   }
 
   .game-status {

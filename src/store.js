@@ -7,37 +7,70 @@ export default new Vuex.Store({
   state: {
     activePlayer: 'X',
     nonActivePlayer: 'O',
-    gameStatus: '',
+    gameStatus: 'turn',
     moves: 0,
-    cells: ['', '', '', '', '', '', '', '', ''],
+    matches: 0,
+    cells: new Array(9),
+    wins: {
+      x: 0,
+      o: 0,
+    },
     winConditions: [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
       [1, 4, 7],
       [2, 5, 8],
-      [3, 6, 9],
-      [1, 5, 9],
-      [3, 5, 7]
+      [0, 4, 8],
+      [2, 4, 6]
     ],
     players: {
       x: 'X',
       o: 'O',
     },
-
     gameStatuses: {
       turn: 'turn',
       win: 'win',
       draw: 'draw',
     },
+
+    statusMessages: {
+      turn: 'player move',
+      draw: 'Draw!',
+      win: 'player win!',
+    },
   },
   mutations: {
-    makeMove: state => state.moves++,
+    makeMove: state => {
+      return state.moves++;
+    },
     changePlayer: state => {
       if (state.activePlayer === 'X') {
         return state.activePlayer = '0';
       }
       return state.activePlayer = 'X';
+    },
+    changeGameStatus: (state, checkForWin) => {
+      if (checkForWin) {
+        state.gameStatus = state.gameStatuses.win;
+        (state.activePlayer === state.players.x) ? state.wins.x++ : state.wins.o++;
+        state.matches++;
+        return false;
+      } else if (state.moves == 9) {
+        state.gameStatus = state.gameStatuses.draw;
+        state.matches++;
+        return false;
+      } else {
+        state.gameStatus = state.gameStatuses.turn;
+        return true;
+      }
+    },
+    restart: state => {
+      state.activePlayer = state.players.x;
+      state.gameStatus = state.gameStatuses.turn;
+      state.moves = 0;
+      state.cells = new Array(9);
     },
   },
 });
