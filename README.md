@@ -1,29 +1,24 @@
 # tic-tac-toe
 
-## Project setup
+## Установка проекта
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Компиляция и hot-reload для разработки
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
+### Компиляция и минификация для production
 ```
 npm run build
 ```
 
-### Run your tests
-```
-npm run test
-```
+## О проекте
 
-### Lints and fixes files
-```
-npm run lint
-```
+Простое приложение "крестики-нолики" на Vue, сделанное по данному [гайду](http://websketches.ru/blog/krestiki-noliki-vuejs2-1)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Что изменено:
+- изменена структура компонентов
+- использован Vuex, для хранения состояния приложения

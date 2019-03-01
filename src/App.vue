@@ -87,6 +87,7 @@
 
   * {
     box-sizing: border-box;
+    outline: none !important;
   }
 
   body {
